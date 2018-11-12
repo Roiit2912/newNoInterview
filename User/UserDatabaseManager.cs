@@ -1,32 +1,36 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace sample
 {
+    public class UserDatabaseManager :IUserRepository
+    {
 
-    public class UserRepository : IUserRepository
-      {
-          static List<User> TestUsers = new List<User>{
-              new User() { Email = "ro.ri@gmail.com", Password  = "Pass11",FullName="bro"},
-              new User() { Email = "rr.rr@gmail.com", Password = "Pass22",FullName="bro1"},
-              new User() { Email = "a@gmail.com", Password = "abc",FullName="bro2"}
-          };
-          public UserRepository()
-          {
-              
-          }
-            public User GetUser(string email)
+        UserDatabase db_obj =null;
+
+        public UserDatabaseManager(UserDatabase db_obj1)
+        {
+            this.db_obj=db_obj1;
+        }
+
+        public User GetUser(string email)
+        {
+            using(db_obj)
             {
-              try
+                 try
               {
-                  return TestUsers.First(user => user.Email.Equals(email));
+                  return db_obj.users.First(user => user.Email.Equals(email));
               } catch
               {
                   return null;
               }
+
             }
+             
+        }
 
             public string Hash(string password)
             {
@@ -43,11 +47,23 @@ namespace sample
 
             public void Register(User obj)
             {  
-                TestUsers.Add(obj);
+                using(db_obj)
+                {
+                    db_obj.users.Add(obj);
+                    db_obj.SaveChanges();
+
+                }
+               
                 
 
             }
 
-        }
+    ~UserDatabaseManager()
+    {
 
+    db_obj.Dispose();
+
+    }
+
+    }
 }

@@ -11,7 +11,6 @@ namespace sample
 
          void Register(User obj);
 
-         string GenerateSecurityKey(string data);
 
         
         

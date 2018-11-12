@@ -15,33 +15,8 @@ namespace sample
         //string key = Convert.ToBase64String(hmac.Key);
         private static string Secret = "XCAP05H6LoKvbRRa/QkqLNMI7cOHguaRyHzyg7n5qEkGjQmtBhz4SzYh4Fqwjyi3KJHlSXKPwVu2+bXr6CtpgQ==";
 
+
         public static string GenerateToken(string Email)
-        {
-            byte[] key = Convert.FromBase64String(Secret);
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(key);
-
-         
-            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.Name, Email)}),
-
-                Expires = DateTime.Now.AddMinutes(30),
-                
-
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            JwtSecurityToken token = handler.CreateJwtSecurityToken(descriptor);
-            //token.Payload["Designation"] = "Learner";
-            var response= handler.WriteToken(token);
-            return JsonConvert.SerializeObject(response);
-        }
-
-        public static string GenerateLearnerToken(string Email)
         {
             var claims = new[]
             {
@@ -51,7 +26,7 @@ namespace sample
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
                 issuer: "AUTH_SERVER",
-                audience: "LEARNER",
+                audience: "LEARNER_AND_CONTRIBUTOR",
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(20),
                 signingCredentials: creds
@@ -66,54 +41,6 @@ namespace sample
 
         }
 
-        public static string GenerateSmeToken(string Email)
-        {
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.UniqueName, Email)
-            };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                issuer: "AUTH_SERVER",
-                audience: "SME",
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(20),
-                signingCredentials: creds
-             );
-            var response = new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
-            };
-            return JsonConvert.SerializeObject(response);
-
-
-        }
-
-        // public static string ValidateToken(string token)
-        // {
-        //     string username = null;
-        //     ClaimsPrincipal principal = GetPrincipal(token);
-
-        //     if (principal == null)
-        //         return null;
-
-        //     ClaimsIdentity identity = null;
-        //     try
-        //     {
-        //         identity = (ClaimsIdentity)principal.Identity;
-        //     }
-        //     catch (NullReferenceException)
-        //     {
-        //         return null;
-        //     }
-
-        //     Claim usernameClaim = identity.FindFirst(ClaimTypes.Name);
-        //     username = usernameClaim.Value;
-
-        //     return username;
-        // }
 
         public static ClaimsPrincipal ValidateMyToken(string token)
         {

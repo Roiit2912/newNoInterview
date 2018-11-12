@@ -6,6 +6,8 @@ namespace sample
     public interface ITokenManager
     {
 
+      string GenerateToken(string Email);
+
         
         
     }
